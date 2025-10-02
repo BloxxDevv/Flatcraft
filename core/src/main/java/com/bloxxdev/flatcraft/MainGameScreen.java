@@ -4,17 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bloxxdev.flatcraft.blocks.Block;
+import com.bloxxdev.flatcraft.gui.Hotbar;
 import com.bloxxdev.flatcraft.player.Player;
+import com.bloxxdev.flatcraft.player.PlayerInputHandler;
 import com.bloxxdev.flatcraft.world.Chunk;
 import com.bloxxdev.flatcraft.world.Location;
 import com.bloxxdev.flatcraft.world.World;
@@ -36,6 +35,7 @@ public class MainGameScreen implements Screen {
     public static HashMap<Integer, Chunk> previouslyLoadedChunks = new HashMap<>();
 
     public static Player player;
+    public static Hotbar hotbar;
 
     public static World world;
 
@@ -47,6 +47,8 @@ public class MainGameScreen implements Screen {
     public static File worldFolder = new File(System.getenv("APPDATA") + "/.flatcraft/world");
     public static File chunkFolder = new File(System.getenv("APPDATA") + "/.flatcraft/world/chunks");
 
+    public static final int MAX_ID = 3;
+
     @Override
     public void show() {
         if (!chunkFolder.exists()){
@@ -55,6 +57,12 @@ public class MainGameScreen implements Screen {
 
         world = new World();
         player = new Player();
+        hotbar = new Hotbar();
+
+        hotbar.show();
+        Gdx.input.setInputProcessor(new PlayerInputHandler(hotbar));
+
+        player.init();
 
         world.loadWorld();
 
@@ -324,9 +332,12 @@ public class MainGameScreen implements Screen {
                             player.hitbox.getPos()[0] >= selection.getX() + 1) &&
                                 selection.getBlock() == null
                     ) {
-                        selection.setBlock(new Block(Block.STONE));
-                        cooldown = true;
-                        timer.schedule(resetCD, 200);
+
+                        if (player.getItemInHand().isBlock()) {
+                            selection.setBlock(new Block(player.getItemInHand().getType().getId()));
+                            cooldown = true;
+                            timer.schedule(resetCD, 200);
+                        }
                     }
 
                 } else if (Gdx.input.isButtonPressed(LEFT)) {
@@ -345,6 +356,7 @@ public class MainGameScreen implements Screen {
         player.tick();
         setBlockPick();
         checkMouseClick();
+        hotbar.tick();
         if (Gdx.input.isKeyPressed(Input.Keys.F7)){
             F7Pressed = true;
             takeScreenshot();
@@ -386,6 +398,8 @@ public class MainGameScreen implements Screen {
 
         debugFont.getData().setScale(3);
         debugFont.draw(batch, "Position: " + player.getX() + " " + player.getY(), 10, 50);
+
+        hotbar.render(batch);
 
         batch.end();
     }

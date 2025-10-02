@@ -6,10 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.bloxxdev.flatcraft.Main;
 import com.bloxxdev.flatcraft.MainGameScreen;
+import com.bloxxdev.flatcraft.items.Item;
 import com.bloxxdev.flatcraft.phys.AABB;
 import com.bloxxdev.flatcraft.player.Player;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class Block implements Serializable {
 
@@ -21,6 +25,10 @@ public class Block implements Serializable {
 
     private boolean selected = false;
 
+    public static final HashSet<Integer> blockIDs = new HashSet<>(Arrays.asList(
+        1, 2, 3
+    ));
+
     public Block(int id){
         this.id = id;
     }
@@ -30,11 +38,7 @@ public class Block implements Serializable {
     }
 
     public AABB getHitbox(int x, int y){
-        if (id == STONE) {
-            return new AABB(x, y, 1, 1);
-        }else{
-            return null;
-        }
+        return new AABB(x, y, 1, 1);
     }
 
     public void setSelected(boolean selected) {

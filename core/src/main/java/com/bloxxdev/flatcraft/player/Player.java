@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.bloxxdev.flatcraft.Main;
+import com.bloxxdev.flatcraft.MainGameScreen;
 import com.bloxxdev.flatcraft.blocks.Block;
+import com.bloxxdev.flatcraft.gui.Hotbar;
+import com.bloxxdev.flatcraft.items.ItemData;
 import com.bloxxdev.flatcraft.phys.AABB;
 import com.bloxxdev.flatcraft.world.Location;
 
@@ -19,6 +22,8 @@ public class Player {
     private boolean onGround = false;
 
     public AABB hitbox;
+
+    public Inventory playerInventory;
 
     //Top Left Pos
     private float x;
@@ -53,6 +58,8 @@ public class Player {
     public int mX = 0;
     public float mY = 0;
 
+    private Hotbar hotbar;
+
     public Player(){
         x = 0;
         y = 70;
@@ -61,6 +68,16 @@ public class Player {
         leftLeg.flip(true, false);
 
         this.hitbox = new AABB(x, y, (float)WIDTH/16, (float)HEIGHT/16);
+
+        this.playerInventory = new Inventory(9);
+    }
+
+    public void init(){
+        hotbar = MainGameScreen.hotbar;
+    }
+
+    public Inventory getPlayerInventory() {
+        return playerInventory;
     }
 
     public float getX() {
@@ -164,10 +181,10 @@ public class Player {
         batch.begin();
 
         batch.draw(head, displayX+2*Main.DEFAULT_SCALE, displayY-head.getHeight()*Main.DEFAULT_SCALE, head.getWidth()*4, head.getHeight()*4);
-        batch.draw(face1, displayX+2* Main.DEFAULT_SCALE, displayY-face1.getHeight()*Main.DEFAULT_SCALE, face1.getWidth()*4, face1.getHeight()*4);
+        batch.draw(face2, displayX+2* Main.DEFAULT_SCALE, displayY-face1.getHeight()*Main.DEFAULT_SCALE, face1.getWidth()*4, face1.getHeight()*4);
 
         batch.setColor(101/255F, 67/255F, 33/255F, 1);
-        batch.draw(hair1, displayX, displayY-Main.DEFAULT_SCALE*hair1.getHeight()+8*Main.DEFAULT_SCALE, hair1.getWidth()*4, hair1.getHeight()*4);
+        batch.draw(hair3, displayX, displayY-Main.DEFAULT_SCALE*hair1.getHeight()+8*Main.DEFAULT_SCALE, hair1.getWidth()*4, hair1.getHeight()*4);
         batch.setColor(1, 1, 1, 1);
 
         batch.setColor(0/255F, 0/255F, 255/255F, 1);
@@ -185,6 +202,14 @@ public class Player {
         batch.setColor(1, 1, 1, 1);
 
         batch.end();
+    }
+
+    public ItemData getItemInHand(){
+        return playerInventory.items[hotbar.getSelection()];
+    }
+
+    public Hotbar getHotbar() {
+        return hotbar;
     }
 
     private void updateBB(){
