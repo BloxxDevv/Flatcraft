@@ -91,8 +91,8 @@ Block abbauen / platzieren:	Linke / Rechte Maustaste
 Blocktyp wechseln:	1-9 (Nur die ersten 3 Hotbar Slots enthalten Blöcke) oder Mausrad
 
 
-https://imgur.com/a/SaZFvfL
-https://imgur.com/a/jkkeAyQ
+![Welt mit com spieler platzierten Blöcken](https://imgur.com/a/SaZFvfL)
+![Weltgeneration mit Perlin Noise](https://imgur.com/a/jkkeAyQ)
 
 
 Fazit
