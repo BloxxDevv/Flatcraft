@@ -17,6 +17,7 @@ import com.bloxxdev.flatcraft.player.PlayerInputHandler;
 import com.bloxxdev.flatcraft.world.Chunk;
 import com.bloxxdev.flatcraft.world.Location;
 import com.bloxxdev.flatcraft.world.World;
+import com.bloxxdev.flatcraft.world.worldgen.Worldgen;
 
 import java.io.File;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ public class MainGameScreen implements Screen {
         world = new World();
         player = new Player();
         hotbar = new Hotbar();
+
+        Worldgen.genRootTable();
 
         hotbar.show();
         Gdx.input.setInputProcessor(new PlayerInputHandler(hotbar));
@@ -205,7 +208,7 @@ public class MainGameScreen implements Screen {
         return
             blockAt(x-1, y) != null ||
             blockAt(x+1, y) != null ||
-            blockAt(x, y-1) != null ||
+                (y > 0) && blockAt(x, y-1) != null ||
             blockAt(x, y+1) != null;
     }
 

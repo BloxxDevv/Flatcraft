@@ -26,6 +26,9 @@ public class Location {
     }
 
     public Block getBlock(){
+        if (y < 0)
+            return null;
+
         int chunkID = x/64;
         if (x < 0){
             chunkID = -((Math.abs(x)-1)/64+1);
