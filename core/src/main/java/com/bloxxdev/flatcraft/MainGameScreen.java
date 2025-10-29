@@ -390,8 +390,16 @@ public class MainGameScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(new Color(0, 200, 200, 1));
-
         tick();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        shapeRenderer.setColor(0, 0, 0, 0);
+
+        int rectheight = 3000;
+        shapeRenderer.rect(player.getDisplayX()-1500, (-rectheight+player.getDisplayY()-Player.HEIGHT*Main.DEFAULT_SCALE)-player.getY()*16*Main.DEFAULT_SCALE, 3000, rectheight);
+
+        shapeRenderer.end();
 
         player.render();
 

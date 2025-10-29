@@ -53,9 +53,9 @@ public class Block implements Serializable {
         if ((displayX > -16*Main.DEFAULT_SCALE && displayX < Gdx.graphics.getWidth()+10) && displayY > -16*Main.DEFAULT_SCALE && displayY < Gdx.graphics.getHeight()+10) {
 
             batch.begin();
-
-            batch.draw(BlockTextures.blockTextures[id], displayX, displayY, 16 * Main.DEFAULT_SCALE, 16 * Main.DEFAULT_SCALE);
-
+            if (BlockTextures.blockTextures[id] != null) {
+                batch.draw(BlockTextures.blockTextures[id], displayX, displayY, 16 * Main.DEFAULT_SCALE, 16 * Main.DEFAULT_SCALE);
+            }
             batch.end();
 
             if (selected) {
