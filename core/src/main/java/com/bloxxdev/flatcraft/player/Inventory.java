@@ -12,6 +12,7 @@ public class Inventory {
         items[0] = new ItemData(Item.STONE, 1);
         items[1] = new ItemData(Item.GRASS, 1);
         items[2] = new ItemData(Item.DIRT, 1);
+        items[3] = new ItemData(Item.BEDROCK, 1);
     }
 
 }

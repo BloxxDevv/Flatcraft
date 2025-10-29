@@ -338,13 +338,16 @@ public class MainGameScreen implements Screen {
 
                         if (player.getItemInHand().isBlock()) {
                             selection.setBlock(new Block(player.getItemInHand().getType().getId()));
+                            System.out.println(selection.getBlock());
                             cooldown = true;
                             timer.schedule(resetCD, 200);
                         }
                     }
 
                 } else if (Gdx.input.isButtonPressed(LEFT)) {
-                    selection.setBlock(null);
+                    if (selection.getBlock() != null && selection.getBlock().getType() != Block.BEDROCK){
+                        selection.setBlock(null);
+                    }
                     cooldown = true;
                     timer.schedule(resetCD, 200);
                 }

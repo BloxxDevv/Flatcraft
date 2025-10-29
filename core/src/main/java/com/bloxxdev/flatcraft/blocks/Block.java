@@ -20,13 +20,14 @@ public class Block implements Serializable {
     public static final int STONE = 1;
     public static final int GRASS = 2;
     public static final int DIRT = 3;
+    public static final int BEDROCK = 4;
 
     private int id;
 
     private boolean selected = false;
 
     public static final HashSet<Integer> blockIDs = new HashSet<>(Arrays.asList(
-        1, 2, 3
+        1, 2, 3, 4
     ));
 
     public Block(int id){

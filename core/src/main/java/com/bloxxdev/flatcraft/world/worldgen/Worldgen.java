@@ -55,13 +55,17 @@ public class Worldgen {
                     for (int y = 0; y < 16; y++) {
                         Block b = null;
                         if (heightmap[x + sx*16] >= y + sy * 16){
-                            if (heightmap[x + sx*16] == y + sy * 16){
-                                b = new GrassBlock();
-                            }else if ((heightmap[x + sx*16] > y + sy * 16) &&
-                                (Math.max(Math.min(Math.min(rockmap[x + sx * 16], rockmap2[x + sx * 16]), heightmap[x + sx * 16]-3), heightmap[x + sx * 16]-6)) < (y + sy * 16)){
-                                b = new DirtBlock();
-                            }else {
-                                b = new Block(Block.STONE);
+                            if (y == 0 && sy == 0) {
+                                b = new Block(Block.BEDROCK);
+                            }else{
+                                if (heightmap[x + sx * 16] == y + sy * 16) {
+                                    b = new GrassBlock();
+                                } else if ((heightmap[x + sx * 16] > y + sy * 16) &&
+                                    (Math.max(Math.min(Math.min(rockmap[x + sx * 16], rockmap2[x + sx * 16]), heightmap[x + sx * 16] - 3), heightmap[x + sx * 16] - 6)) < (y + sy * 16)) {
+                                    b = new DirtBlock();
+                                } else {
+                                    b = new Block(Block.STONE);
+                                }
                             }
                         }
 

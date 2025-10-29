@@ -9,7 +9,8 @@ public enum Item {
 
     DIRT,
     GRASS,
-    STONE;
+    STONE,
+    BEDROCK;
 
     public static HashSet<Integer> validBlocks = new HashSet<Integer>();
 
@@ -21,6 +22,8 @@ public enum Item {
                 return 2;
             case DIRT:
                 return 3;
+            case BEDROCK:
+                return 4;
             default:
                 return 0;
         }
@@ -35,6 +38,9 @@ public enum Item {
         }
         if (this == DIRT){
             return BlockTextures.blockTextures[3];
+        }
+        if (this == BEDROCK) {
+            return BlockTextures.blockTextures[4];
         }
         return null;
     }

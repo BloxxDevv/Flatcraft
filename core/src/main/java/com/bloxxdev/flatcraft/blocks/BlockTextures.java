@@ -7,6 +7,7 @@ public class BlockTextures {
         null,
         new Texture("blocks/Stone.png"),
         new Texture("blocks/Grass.png"),
-        new Texture("blocks/Dirt.png")
+        new Texture("blocks/Dirt.png"),
+        new Texture("blocks/Bedrock.png")
     };
 }
