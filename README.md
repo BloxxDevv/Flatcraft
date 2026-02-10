@@ -28,6 +28,8 @@ Hauptfunktionen:
 
         Multithreading zur ruckelfreien Generierung während des Spielens
 
+        Höhlen-generierung mit selbst erarbeitetem Cave Carving Algorithmus
+
 
     Persistente Welt
 
