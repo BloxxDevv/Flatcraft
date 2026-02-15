@@ -136,6 +136,13 @@ public class MainGameScreen implements Screen {
         float originWorldX = player.getX() + (Player.WIDTH / 16F) / 2F;
         float originWorldY = player.getY() + (Player.HEIGHT / 16F) / 2F;
 
+        //DEBUG LINES
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.setColor(Color.RED);
+//        shapeRenderer.line(originX, originY, mouseX, mouseY);
+//        shapeRenderer.setColor(Color.WHITE);
+//        shapeRenderer.end();
+
         float slopeX = (mouseY - originY) / (mouseX - originX);
         float slopeY = (mouseX - originX) / (mouseY - originY);
 
@@ -178,6 +185,12 @@ public class MainGameScreen implements Screen {
                 if (loc.getBlock() != null){
                     return new AdvancedLocation(loc, ' ');
                 }else if (loc.equals(getLocAtScreen(mouseX, mouseY))){
+                    if (gridDistY > 0) {
+                        gridDistY++;
+                    }else{
+                        gridDistY--;
+                    }
+
                     distToXInt = Math.sqrt(gridDistY * gridDistY + gridDistY * slopeY * gridDistY * slopeY);
                     distToYInt = Math.sqrt(gridDistX * gridDistX + gridDistX * slopeX * gridDistX * slopeX);
 
@@ -204,6 +217,12 @@ public class MainGameScreen implements Screen {
                 if (loc.getBlock() != null){
                     return new AdvancedLocation(loc, ' ');
                 }else if (loc.equals(getLocAtScreen(mouseX, mouseY))){
+                    if (gridDistX > 0) {
+                        gridDistX++;
+                    }else{
+                        gridDistX--;
+                    }
+
                     distToXInt = Math.sqrt(gridDistY * gridDistY + gridDistY * slopeY * gridDistY * slopeY);
                     distToYInt = Math.sqrt(gridDistX * gridDistX + gridDistX * slopeX * gridDistX * slopeX);
 
@@ -275,8 +294,10 @@ public class MainGameScreen implements Screen {
 
             AdvancedLocation loc = findIntersectLoc(mouseX, mouseY);
 
-            if (loc == null || loc.loc == null){
+            if (loc == null){
                 loc = new AdvancedLocation(new Location((int) Math.floor(xCoord), (int) Math.floor(yCoord)), ' ');
+            }else if (loc.loc == null){
+                loc.loc = new Location((int) Math.floor(xCoord), (int) Math.floor(yCoord));
             }
 
             if (loc.loc.getBlock() != null) {
