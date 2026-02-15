@@ -8,6 +8,8 @@ public class BlockTextures {
         new Texture("blocks/Stone.png"),
         new Texture("blocks/Grass.png"),
         new Texture("blocks/Dirt.png"),
-        new Texture("blocks/Bedrock.png")
+        new Texture("blocks/Bedrock.png"),
+        new Texture("blocks/OakLeaves.png"),
+        new Texture("blocks/OakLog.png")
     };
 }

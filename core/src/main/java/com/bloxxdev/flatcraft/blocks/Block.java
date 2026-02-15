@@ -3,6 +3,7 @@ package com.bloxxdev.flatcraft.blocks;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.bloxxdev.flatcraft.Main;
 import com.bloxxdev.flatcraft.MainGameScreen;
@@ -17,17 +18,23 @@ import java.util.HashSet;
 
 public class Block implements Serializable {
 
+    private static final long serialVersionUID = 4786291023L;
+
+    public Blockdata blockdata = new Blockdata();
+
     public static final int STONE = 1;
     public static final int GRASS = 2;
     public static final int DIRT = 3;
     public static final int BEDROCK = 4;
+    public static final int OAK_LEAVES = 5;
+    public static final int OAK_LOG = 6;
 
     private int id;
 
     private boolean selected = false;
 
     public static final HashSet<Integer> blockIDs = new HashSet<>(Arrays.asList(
-        1, 2, 3, 4
+        1, 2, 3, 4, 5, 6
     ));
 
     public Block(int id){
@@ -54,7 +61,12 @@ public class Block implements Serializable {
 
             batch.begin();
             if (BlockTextures.blockTextures[id] != null) {
-                batch.draw(BlockTextures.blockTextures[id], displayX, displayY, 16 * Main.DEFAULT_SCALE, 16 * Main.DEFAULT_SCALE);
+                //(Texture texture, float x, float y, float originX, float originY, float width, float height, float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY)
+                if (blockdata.axis == 'y' || blockdata.axis == ' ') {
+                    batch.draw(BlockTextures.blockTextures[id], displayX, displayY, 16F * Main.DEFAULT_SCALE / 2, 16F * Main.DEFAULT_SCALE / 2, 16 * Main.DEFAULT_SCALE, 16 * Main.DEFAULT_SCALE, 1, 1, 0, 0, 0, 16, 16, false, false);
+                }else if (blockdata.axis == 'x') {
+                    batch.draw(BlockTextures.blockTextures[id], displayX, displayY, 16F * Main.DEFAULT_SCALE / 2, 16F * Main.DEFAULT_SCALE / 2, 16 * Main.DEFAULT_SCALE, 16 * Main.DEFAULT_SCALE, 1, 1, 90, 0, 0, 16, 16, false, false);
+                }
             }
             batch.end();
 

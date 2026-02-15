@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bloxxdev.flatcraft.blocks.Block;
+import com.bloxxdev.flatcraft.blocks.Blocks;
+import com.bloxxdev.flatcraft.blocks.Property;
 import com.bloxxdev.flatcraft.gui.Hotbar;
 import com.bloxxdev.flatcraft.player.Player;
 import com.bloxxdev.flatcraft.player.PlayerInputHandler;
@@ -31,7 +33,7 @@ public class MainGameScreen implements Screen {
     public static final float MAX_BLOCK_INTERACT_RADIUS = 4;
     public static final float MAX_BLOCK_INTERACT_RADIUS_SQ = MAX_BLOCK_INTERACT_RADIUS*MAX_BLOCK_INTERACT_RADIUS;
 
-    public static Location selection = null;
+    public static AdvancedLocation selection = null;
 
     public static HashMap<Integer, Chunk> previouslyLoadedChunks = new HashMap<>();
 
@@ -115,7 +117,17 @@ public class MainGameScreen implements Screen {
 
     BitmapFont debugFont = new BitmapFont();
 
-    private Location findIntersectLoc(float mouseX, float mouseY) {
+    private class AdvancedLocation{
+        public Location loc;
+        public char axis;
+
+        public AdvancedLocation(Location loc, char axis){
+            this.loc = loc;
+            this.axis = axis;
+        }
+    }
+
+    private AdvancedLocation findIntersectLoc(float mouseX, float mouseY) {
         float originX = player.getDisplayX() + (Main.DEFAULT_SCALE / 2F) * Player.WIDTH;
         float originY = player.getDisplayY() - (Main.DEFAULT_SCALE / 2F) * Player.HEIGHT;
 
@@ -164,16 +176,23 @@ public class MainGameScreen implements Screen {
                 }
                 Location loc = new Location((int)Math.floor(xcoord), (int)Math.floor(ycoord));
                 if (loc.getBlock() != null){
-                    return loc;
+                    return new AdvancedLocation(loc, ' ');
                 }else if (loc.equals(getLocAtScreen(mouseX, mouseY))){
-                    return null;
+                    distToXInt = Math.sqrt(gridDistY * gridDistY + gridDistY * slopeY * gridDistY * slopeY);
+                    distToYInt = Math.sqrt(gridDistX * gridDistX + gridDistX * slopeX * gridDistX * slopeX);
+
+                    if (distToXInt < distToYInt){
+                        return new AdvancedLocation(null, 'y');
+                    }else{
+                        return new AdvancedLocation(null, 'x');
+                    }
                 }
                 if (gridDistY > 0) {
                     gridDistY++;
                 }else{
                     gridDistY--;
                 }
-                //if intersect on the y axis is closer
+            //if intersect on the y axis is closer
             }else{
                 float xcoord = originWorldX+gridDistX;
                 float ycoord = originWorldY+gridDistX*slopeX;
@@ -183,9 +202,16 @@ public class MainGameScreen implements Screen {
                 //Get the grid point and its data and check if there is a block if yes return
                 Location loc = new Location((int)Math.floor(xcoord), (int)Math.floor(ycoord));
                 if (loc.getBlock() != null){
-                    return loc;
+                    return new AdvancedLocation(loc, ' ');
                 }else if (loc.equals(getLocAtScreen(mouseX, mouseY))){
-                    return null;
+                    distToXInt = Math.sqrt(gridDistY * gridDistY + gridDistY * slopeY * gridDistY * slopeY);
+                    distToYInt = Math.sqrt(gridDistX * gridDistX + gridDistX * slopeX * gridDistX * slopeX);
+
+                    if (distToXInt < distToYInt){
+                        return new AdvancedLocation(null, 'y');
+                    }else{
+                        return new AdvancedLocation(null, 'x');
+                    }
                 }
                 if (gridDistX > 0) {
                     gridDistX++;
@@ -194,6 +220,7 @@ public class MainGameScreen implements Screen {
                 }
             }
         }
+
         return null;
     }
 
@@ -246,24 +273,24 @@ public class MainGameScreen implements Screen {
                 (int)Math.floor(yCoord) >= player.hitbox.getPos()[3]))
         && (distanceToPlayerSQ((int)Math.floor(xCoord), (int)Math.floor(yCoord)) <= MAX_BLOCK_INTERACT_RADIUS_SQ)) {
 
-            Location loc = findIntersectLoc(mouseX, mouseY);
+            AdvancedLocation loc = findIntersectLoc(mouseX, mouseY);
 
-            if (loc == null){
-                loc = new Location((int) Math.floor(xCoord), (int) Math.floor(yCoord));
+            if (loc == null || loc.loc == null){
+                loc = new AdvancedLocation(new Location((int) Math.floor(xCoord), (int) Math.floor(yCoord)), ' ');
             }
 
-            if (loc.getBlock() != null) {
-                if (selection != null && selection.getBlock() != null) {
-                    selection.getBlock().setSelected(false);
+            if (loc.loc.getBlock() != null) {
+                if (selection != null && selection.loc.getBlock() != null) {
+                    selection.loc.getBlock().setSelected(false);
                 }
-                loc.getBlock().setSelected(true);
+                loc.loc.getBlock().setSelected(true);
                 selection = loc;
             } else {
-                if (selection != null && selection.getBlock() != null) {
-                    selection.getBlock().setSelected(false);
+                if (selection != null && selection.loc.getBlock() != null) {
+                    selection.loc.getBlock().setSelected(false);
                 }
 
-                if (hasSupportBlock(loc)) {
+                if (hasSupportBlock(loc.loc)) {
                     float displayX = MainGameScreen.player.getDisplayX() + ((int) Math.floor(xCoord) - MainGameScreen.player.getX()) * 16 * Main.DEFAULT_SCALE;
                     float displayY = MainGameScreen.player.getDisplayY() + ((int) Math.floor(yCoord) - MainGameScreen.player.getY()) * 16 * Main.DEFAULT_SCALE - Player.HEIGHT * Main.DEFAULT_SCALE;
 
@@ -287,11 +314,13 @@ public class MainGameScreen implements Screen {
                     renderer.end();
 
                     selection = loc;
+                }else{
+                    selection = null;
                 }
             }
         }else{
-            if (selection != null && selection.getBlock() != null) {
-                selection.getBlock().setSelected(false);
+            if (selection != null && selection.loc.getBlock() != null) {
+                selection.loc.getBlock().setSelected(false);
             }
             selection = null;
         }
@@ -314,6 +343,16 @@ public class MainGameScreen implements Screen {
 
     Timer timer = new Timer();
 
+    private boolean containsProperty(Property[] properties, Property property){
+        for (Property p : properties){
+            if (p == property){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void checkMouseClick(){
         int RIGHT = Input.Buttons.RIGHT;
         int LEFT = Input.Buttons.LEFT;
@@ -327,26 +366,29 @@ public class MainGameScreen implements Screen {
 
         if (!cooldown) {
             if (selection != null) {
-                if (Gdx.input.isButtonPressed(RIGHT)) {
+                if (Gdx.input.isButtonPressed(RIGHT) && player.getItemInHand() != null) {
                     if (
-                        (player.hitbox.getPos()[3] <= selection.getY() ||
-                            player.hitbox.getPos()[1] >= selection.getY() + 1 ||
-                            player.hitbox.getPos()[2] <= selection.getX() ||
-                            player.hitbox.getPos()[0] >= selection.getX() + 1) &&
-                                selection.getBlock() == null
+                        (player.hitbox.getPos()[3] <= selection.loc.getY() ||
+                            player.hitbox.getPos()[1] >= selection.loc.getY() + 1 ||
+                            player.hitbox.getPos()[2] <= selection.loc.getX() ||
+                            player.hitbox.getPos()[0] >= selection.loc.getX() + 1) &&
+                                selection.loc.getBlock() == null
                     ) {
 
                         if (player.getItemInHand().isBlock()) {
-                            selection.setBlock(new Block(player.getItemInHand().getType().getId()));
-                            System.out.println(selection.getBlock());
+                            Block b = new Block(player.getItemInHand().getType().getId());
+                            if (containsProperty(Blocks.valueOf(player.getItemInHand().getType().name()).properties, Property.AXIS)){
+                                b.blockdata.setAxis(selection.axis);
+                            }
+                            selection.loc.setBlock(b);
                             cooldown = true;
                             timer.schedule(resetCD, 200);
                         }
                     }
 
                 } else if (Gdx.input.isButtonPressed(LEFT)) {
-                    if (selection.getBlock() != null && selection.getBlock().getType() != Block.BEDROCK){
-                        selection.setBlock(null);
+                    if (selection.loc.getBlock() != null && selection.loc.getBlock().getType() != Block.BEDROCK){
+                        selection.loc.setBlock(null);
                     }
                     cooldown = true;
                     timer.schedule(resetCD, 200);
@@ -440,6 +482,6 @@ public class MainGameScreen implements Screen {
 
     @Override
     public void dispose() {
-        selection.getBlock().setSelected(false);
+        selection.loc.getBlock().setSelected(false);
     }
 }
