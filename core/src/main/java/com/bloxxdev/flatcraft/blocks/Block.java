@@ -46,6 +46,9 @@ public class Block implements Serializable {
     }
 
     public AABB getHitbox(int x, int y){
+        if (MainGameScreen.player.isAvoiding() && (getType() == OAK_LEAVES || getType() == OAK_LOG)){
+            return null;
+        }
         return new AABB(x, y, 1, 1);
     }
 

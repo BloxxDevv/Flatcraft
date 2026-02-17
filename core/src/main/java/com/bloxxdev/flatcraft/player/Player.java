@@ -55,6 +55,8 @@ public class Player {
     private TextureRegion leftLeg = new TextureRegion(leg);
     private TextureRegion rightLeg = new TextureRegion(leg);
 
+    private boolean avoiding = false;
+
     public int mX = 0;
     public float mY = 0;
 
@@ -105,6 +107,14 @@ public class Player {
 
     public boolean isOnGround() {
         return onGround;
+    }
+
+    public void setAvoiding(boolean avoiding) {
+        this.avoiding = avoiding;
+    }
+
+    public boolean isAvoiding() {
+        return avoiding;
     }
 
     private void move(){

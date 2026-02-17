@@ -30,7 +30,7 @@ public class Hotbar {
     }
 
     public void mouseScrolled(float amountY){
-        selection = (selection+(int)amountY+9)%9;
+        selection = (selection-(int)amountY+9)%9;
     }
 
     int keymask = 0b000000000;

@@ -76,6 +76,7 @@ public class MainGameScreen implements Screen {
 
     boolean a = false;
     boolean d = false;
+    boolean s = false;
 
     private void checkPlayerKeys() {
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -99,6 +100,18 @@ public class MainGameScreen implements Screen {
             if (d) {
                 player.mX -= 1;
                 d = false;
+            }
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            if (!s) {
+                player.setAvoiding(true);
+                s = true;
+            }
+        } else {
+            if (s) {
+                player.setAvoiding(false);
+                s = false;
             }
         }
 
@@ -418,41 +431,17 @@ public class MainGameScreen implements Screen {
         }
     }
 
-    boolean F7Pressed = false;
-
     public void tick(){
         checkPlayerKeys();
         player.tick();
         setBlockPick();
         checkMouseClick();
         hotbar.tick();
-        if (Gdx.input.isKeyPressed(Input.Keys.F7)){
-            F7Pressed = true;
-            takeScreenshot();
-        }else if (!Gdx.input.isKeyPressed(Input.Keys.F7)){
-            F7Pressed = false;
-        }
-    }
-
-    private void takeScreenshot() {
-        Gdx.gl.glFlush(); // Ensure rendering is done
-
-        int width = Gdx.graphics.getBackBufferWidth();
-        int height = Gdx.graphics.getBackBufferHeight();
-
-        byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, width, height, false); // don't flip
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
-
-        FileHandle file = Gdx.files.absolute(System.getenv("APPDATA") + "/AtomicChambers/latestScreenshot.png");
-        PixmapIO.writePNG(file, pixmap, Deflater.DEFAULT_COMPRESSION, true);
-
-        pixmap.dispose();
     }
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(new Color(0, 200, 200, 1));
+        ScreenUtils.clear(new Color(130/255F, 211/255F, 242/255F, 1));
         tick();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -464,12 +453,18 @@ public class MainGameScreen implements Screen {
 
         shapeRenderer.end();
 
-        player.render();
+        if (!player.isAvoiding()) {
+            player.render();
+        }
 
         Thread worldGenerator = new Thread(loadWorld);
         worldGenerator.start();
 
         world.render(batch);
+
+        if (player.isAvoiding()) {
+            player.render();
+        }
 
         batch.begin();
 

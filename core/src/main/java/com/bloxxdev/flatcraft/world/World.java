@@ -74,6 +74,11 @@ public class World {
             }
             if (!f2.exists()) {
                 Worldgen.generate(chunkIDs[2]);
+
+                Worldgen.genTrees(chunkIDs[2]);
+                Worldgen.genTrees(chunkIDs[1]);
+                Worldgen.genTrees(chunkIDs[3]);
+
                 Worldgen.genCaves(chunkIDs[2]);
                 Worldgen.genCaves(chunkIDs[1]);
                 Worldgen.genCaves(chunkIDs[3]);
@@ -83,6 +88,7 @@ public class World {
                 maxChunks[0] = currentPlayerChunk - 1;
                 try {
                     updateMaxChunks();
+                    Worldgen.genTrees(maxChunks[0]);
                     Worldgen.finishCaves(true);
                     Worldgen.genCaves(maxChunks[0]);
                 } catch (IOException e) {
@@ -92,12 +98,15 @@ public class World {
                 maxChunks[1] = currentPlayerChunk + 1;
                 try {
                     updateMaxChunks();
+                    Worldgen.genTrees(maxChunks[1]);
                     Worldgen.finishCaves(false);
                     Worldgen.genCaves(maxChunks[1]);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
+
+            if (!Worldgen.dirtyChunks.isEmpty()) {
 
                 for (Object i : Worldgen.dirtyChunks.keySet().toArray()) {
                     try {
@@ -109,6 +118,8 @@ public class World {
                         throw new RuntimeException(e);
                     }
                 }
+
+            }
 
             readChunk(f0, chunkIDs[0], 0);
             readChunk(f1, chunkIDs[1], 1);

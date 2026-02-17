@@ -2,9 +2,11 @@ package com.bloxxdev.flatcraft.world.worldgen;
 
 import com.bloxxdev.flatcraft.MainGameScreen;
 import com.bloxxdev.flatcraft.blocks.Block;
+import com.bloxxdev.flatcraft.blocks.Blockdata;
 import com.bloxxdev.flatcraft.blocks.DirtBlock;
 import com.bloxxdev.flatcraft.blocks.GrassBlock;
 import com.bloxxdev.flatcraft.world.Chunk;
+import com.bloxxdev.flatcraft.world.Location;
 import com.bloxxdev.flatcraft.world.Subchunk;
 
 import java.io.File;
@@ -29,11 +31,8 @@ public class Worldgen {
     private static ArrayList<CaveData> leftPoints = new ArrayList<>();
     private static ArrayList<CaveData> rightPoints = new ArrayList<>();
 
-    public static void genRootTable(){
-        for (int i = 0; i < 50; i++) {
-            rootTable[i] = (int) Math.floor(Math.sqrt(i));
-        }
-    }
+
+    //TERRAIN
 
     public static void generate(int id){
         int[] heightmap = new int[64];
@@ -61,7 +60,7 @@ public class Worldgen {
                                 if (heightmap[x + sx * 16] == y + sy * 16) {
                                     b = new GrassBlock();
                                 } else if ((heightmap[x + sx * 16] > y + sy * 16) &&
-                                    (Math.max(Math.min(Math.min(rockmap[x + sx * 16], rockmap2[x + sx * 16]), heightmap[x + sx * 16] - 3), heightmap[x + sx * 16] - 6)) < (y + sy * 16)) {
+                                        (Math.max(Math.min(Math.min(rockmap[x + sx * 16], rockmap2[x + sx * 16]), heightmap[x + sx * 16] - 3), heightmap[x + sx * 16] - 6)) < (y + sy * 16)) {
                                     b = new DirtBlock();
                                 } else {
                                     b = new Block(Block.STONE);
@@ -72,7 +71,6 @@ public class Worldgen {
                         sc.blocks[(y * 16) + x] = b;
                     }
                 }
-
                 chunk.subchunks[(sx * 16) + sy] = sc;
             }
         }
@@ -83,15 +81,87 @@ public class Worldgen {
         }
     }
 
+    //TREES
+
+    public static int calcFloorLevel(int x){
+        Location l = new Location(x, 255);
+        while (l.getBlock() == null || l.getBlock().getType() != Block.GRASS){
+            l.setY(l.getY()-1);
+        }
+        return l.getY();
+    }
+
+    public static void genLeaves(int x, int y, float chance, int iteration){
+        Location l = new Location(x, y);
+        l.setX(x-1);
+        if ((l.getBlock() == null || l.getBlock().getType() == Block.OAK_LEAVES) && Math.random() <= chance && iteration < 3){
+            setBlockNoSave(l.getX(), l.getY(), new Block(Block.OAK_LEAVES));
+            genLeaves(l.getX(), l.getY(), chance-0.15F, iteration+1);
+        }
+        l.setX(x+1);
+        if ((l.getBlock() == null || l.getBlock().getType() == Block.OAK_LEAVES) && Math.random() <= chance && iteration < 3){
+            setBlockNoSave(l.getX(), l.getY(), new Block(Block.OAK_LEAVES));
+            genLeaves(l.getX(), l.getY(), chance-0.15F, iteration+1);
+        }
+        l.setX(x);
+        l.setY(y-1);
+        if ((l.getBlock() == null || l.getBlock().getType() == Block.OAK_LEAVES) && Math.random() <= chance && iteration < 3){
+            setBlockNoSave(l.getX(), l.getY(), new Block(Block.OAK_LEAVES));
+            genLeaves(l.getX(), l.getY(), chance-0.15F, iteration+1);
+        }
+        l.setY(y+1);
+        if ((l.getBlock() == null || l.getBlock().getType() == Block.OAK_LEAVES) && Math.random() <= chance && iteration < 3){
+            setBlockNoSave(l.getX(), l.getY(), new Block(Block.OAK_LEAVES));
+            genLeaves(l.getX(), l.getY(), chance-0.15F, iteration+1);
+        }
+    }
+
+    public static void genTree(int x){
+        int y = calcFloorLevel(x);
+
+            Block b = new Block(Block.OAK_LOG);
+            b.blockdata.setAxis('y');
+
+            Location l = new Location(x, y);
+
+            int height = random.nextInt(3) + 3;
+
+            for (int i = 0; i < height; i++) {
+                b = new Block(Block.OAK_LOG);
+                b.blockdata.setAxis('y');
+                l.setY(l.getY() + 1);
+                setBlockNoSave(l.getX(), l.getY(), b);
+            }
+
+            genLeaves(l.getX(), l.getY(), 1F, 0);
+
+    }
+
+    public static void genTrees(int id){
+        int c = 3;
+        for (int i = id*64; i < id*64 + 64; i++) {
+            c--;
+            if (Math.random() < 0.05 && c <= 0){
+                genTree(i);
+                c = 3;
+            }
+        }
+    }
+
+    //CAVES
+
+    public static void genRootTable(){
+        for (int i = 0; i < 50; i++) {
+            rootTable[i] = (int) Math.floor(Math.sqrt(i));
+        }
+    }
+
     public static void genCaves(int id){
-        System.out.println(id);
         int ox = random.nextInt(64)+id*64;
         int oy = random.nextInt(40)+11;
         int size = 12;
         int x = ox;
         int y = oy;
-
-        System.out.println("x = " + x + "\ny = " + y);
 
         if(id == 0) {
             while (size > 3) {
@@ -199,13 +269,11 @@ public class Worldgen {
     //Side: true = left, false = right
     public static void finishCaves(boolean side){
         if (side){
-            System.out.println("left Points: " + leftPoints);
             for (Object cd : leftPoints.toArray()){
                 continueCaves(((CaveData)cd).x, ((CaveData)cd).y, ((CaveData)cd).size, true, ((CaveData) cd).grow);
                 leftPoints.remove(cd);
             }
         }else {
-            System.out.println("right Points: " + rightPoints);
             for (Object cd : rightPoints.toArray()){
                 continueCaves(((CaveData)cd).x, ((CaveData)cd).y, ((CaveData)cd).size, false, ((CaveData) cd).grow);
                 rightPoints.remove(cd);
@@ -310,6 +378,25 @@ public class Worldgen {
         }
     }
 
+    static class CaveData{
+        public int x;
+        public int y;
+        public int size;
+        public boolean grow;
+
+        public CaveData(int x, int y, int size, boolean grow){
+            this.x=x;
+            this.y=y;
+            this.size=size;
+            this.grow=grow;
+        }
+
+        @Override
+        public String toString() {
+            return "x=" + x + " y=" + y + " size=" + size + " grow=" + grow;
+        }
+    }
+
     private static void setBlockNoSave(int x, int y, Block type){
         int chunkID = x/64;
         if (x < 0){
@@ -343,25 +430,6 @@ public class Worldgen {
             }
         }
         dirtyChunks.put(chunkID, chunk);
-    }
-
-    static class CaveData{
-        public int x;
-        public int y;
-        public int size;
-        public boolean grow;
-
-        public CaveData(int x, int y, int size, boolean grow){
-            this.x=x;
-            this.y=y;
-            this.size=size;
-            this.grow=grow;
-        }
-
-        @Override
-        public String toString() {
-            return "x=" + x + " y=" + y + " size=" + size + " grow=" + grow;
-        }
     }
 }
 

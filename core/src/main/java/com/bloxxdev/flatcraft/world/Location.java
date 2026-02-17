@@ -121,6 +121,14 @@ public class Location {
         return null;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return this.getX() == ((Location)obj).getX() && this.getY() == ((Location)obj).getY();
