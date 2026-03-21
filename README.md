@@ -95,6 +95,7 @@ Blocktyp wechseln:	1-9 (Nur die ersten 3 Hotbar Slots enthalten Blöcke) oder Ma
 
 ![Welt mit vom spieler platzierten Blöcken](https://i.imgur.com/rRVhPEg.png)
 ![Weltgeneration mit Perlin Noise](https://i.imgur.com/HTkDLkg.png)
+![Bäume](https://imgur.com/Vfca381.png)
 
 
 Fazit
