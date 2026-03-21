@@ -12,4 +12,9 @@ public class Main extends Game {
     public void create() {
         setScreen(new MainGameScreen());
     }
+
+    @Override
+    public void dispose() {
+        System.exit(0);
+    }
 }
